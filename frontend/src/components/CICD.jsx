@@ -25,21 +25,21 @@ import {
 } from "@mui/icons-material";
 import AddNewRun from "./CI_CD/AddNewRun";
 import TrackingTable from "./CI_CD/TrackingTable";
-import cicdApi from "../api/cicdApi";
+import config from "../config/config";
 
-const CICD = ({ statusUpdates = [] }) => {
+const CICD = ({}) => {
   // const [data, setData] = useState(null);
   // const [loading, setLoading] = useState(true);
   // const [error, setError] = useState(null);
   const [newRun, setNewRun] = useState(null);
 
-  // WebSocket connection removed - it's now in App.jsx and stays open always
+  // WebSocket removed – using REST only now
 
   // Function to handle new run
   const handleNewRun = (run) => {
     setNewRun(run);
-    // Send run to backend via API
-    cicdApi.sendRunRequest(run);
+    // Send run to backend via REST
+    config.api.http.post(config.api.endpoints.cicd.runs, run);
     // Reset newRun after we passed it
     setTimeout(() => setNewRun(null), 100);
   };
@@ -89,7 +89,7 @@ const CICD = ({ statusUpdates = [] }) => {
     <Box>
       <AddNewRun onNewRun={handleNewRun} />
 
-      <TrackingTable newRun={newRun} statusUpdates={statusUpdates} />
+      <TrackingTable newRun={newRun} />
 
       {/* <Box sx={{ mb: 4 }}>
         <Typography variant="h4" gutterBottom>

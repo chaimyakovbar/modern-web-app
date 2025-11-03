@@ -15,7 +15,7 @@ import {
   People,
   Speed,
 } from "@mui/icons-material";
-import homeApi from "../api/homeApi";
+import config from "../config/config";
 
 const Home = () => {
   const [data, setData] = useState(null);
@@ -26,18 +26,27 @@ const Home = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const result = await homeApi.getHomeData();
+        const result = await config.api.http.get(
+          config.api.endpoints.home.dashboard
+        );
         setData(result);
       } catch (err) {
         setError(err.message);
-        // Fallback data is handled in homeApi.getHomeData()
-        // Try again to get fallback data
-        try {
-          const result = await homeApi.getHomeData();
-          setData(result);
-        } catch {
-          // If even fallback fails, keep error state
-        }
+        // Fallback data (same as previous API fallback)
+        setData({
+          title: "Welcome to Avnet",
+          description: "This is the home dashboard with sample data.",
+          stats: [
+            { label: "Total Users", value: 1250, trend: "+12%" },
+            { label: "Active Activity", value: 89, trend: "+5%" },
+            { label: "Performance", value: 94, trend: "+2%" },
+          ],
+          recentActivity: [
+            { action: "User Login", time: "2 minutes ago", status: "success" },
+            { action: "Data Sync", time: "5 minutes ago", status: "success" },
+            { action: "System Update", time: "1 hour ago", status: "warning" },
+          ],
+        });
       } finally {
         setLoading(false);
       }

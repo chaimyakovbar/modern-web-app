@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Drawer,
@@ -21,36 +21,12 @@ import {
 } from "@mui/icons-material";
 import Home from "./components/Home";
 import CICD from "./components/CICD";
-import cicdApi from "./api/cicdApi";
 
 const drawerWidth = 240;
 
 function App() {
   const [activeTab, setActiveTab] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [statusUpdates, setStatusUpdates] = useState([]);
-
-  // WebSocket connection at App level - stays open always
-  useEffect(() => {
-    console.log("🔌 Connecting WebSocket at App level...");
-
-    cicdApi.setStatusUpdateCallback((statuses) => {
-      console.log("Received status updates:", statuses);
-      setStatusUpdates(statuses);
-    });
-
-    cicdApi.setConnectionChangeCallback((connected) => {
-      console.log("WebSocket connection status:", connected);
-    });
-
-    cicdApi.connectWebSocket();
-
-    // Cleanup only when app closes completely
-    return () => {
-      console.log("🔌 Disconnecting WebSocket...");
-      cicdApi.disconnectWebSocket();
-    };
-  }, []); // Only once when app loads
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -108,9 +84,7 @@ function App() {
   );
 
   const ActiveComponent = tabs[activeTab].component;
-
-  // אם זה CICD, תן לו את statusUpdates
-  const componentProps = activeTab === 1 ? { statusUpdates } : {};
+  const componentProps = {};
 
   return (
     <Box sx={{ display: "flex" }}>

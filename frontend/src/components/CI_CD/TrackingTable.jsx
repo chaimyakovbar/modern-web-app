@@ -32,7 +32,7 @@ import {
   ExpandMore,
   ExpandLess,
 } from "@mui/icons-material";
-import cicdApi from "../../api/cicdApi";
+import config from "../../config/config";
 
 // Available statuses
 const STATUSES = {
@@ -119,7 +119,7 @@ const initialProducts = [
   },
 ];
 
-function TrackingTable({ newRun, statusUpdates }) {
+function TrackingTable({ newRun }) {
   const [products, setProducts] = useState(initialProducts);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [expandedRuns, setExpandedRuns] = useState(new Set());
@@ -160,80 +160,7 @@ function TrackingTable({ newRun, statusUpdates }) {
     }
   }, [newRun]);
 
-  // Update statuses from backend
-  useEffect(() => {
-    if (statusUpdates && statusUpdates.length > 0) {
-      console.log("Updating product statuses from backend:", statusUpdates);
-
-      setProducts((prevProducts) => {
-        return prevProducts.map((product) => {
-          // Find status for current product - support for different fields
-          const statusUpdate = statusUpdates.find(
-            (status) =>
-              status.name === product.productName ||
-              status.productName === product.productName ||
-              status.product === product.productName ||
-              status.id === product.id
-          );
-
-          if (statusUpdate) {
-            // Update the status - support for different field names
-            const newStatus =
-              statusUpdate.status ||
-              statusUpdate.statusValue ||
-              statusUpdate.state ||
-              product.status;
-
-            // Convert status to our format if needed
-            let normalizedStatus = newStatus.toLowerCase();
-            if (
-              normalizedStatus === "completed" ||
-              normalizedStatus === "done"
-            ) {
-              normalizedStatus = STATUSES.SUCCESS;
-            } else if (
-              normalizedStatus === "failed" ||
-              normalizedStatus === "error"
-            ) {
-              normalizedStatus = STATUSES.FAILED;
-            } else if (
-              normalizedStatus === "running" ||
-              normalizedStatus === "in_progress"
-            ) {
-              normalizedStatus = STATUSES.RUNNING;
-            } else if (
-              normalizedStatus === "cancelled" ||
-              normalizedStatus === "stopped"
-            ) {
-              normalizedStatus = STATUSES.CANCELLED;
-            } else if (
-              normalizedStatus === "pending" ||
-              normalizedStatus === "waiting"
-            ) {
-              normalizedStatus = STATUSES.PENDING;
-            }
-
-            const updatedProduct = {
-              ...product,
-              status: normalizedStatus,
-            };
-
-            // If there is duration or startTime, update them
-            if (statusUpdate.duration) {
-              updatedProduct.duration = statusUpdate.duration;
-            }
-            if (statusUpdate.startTime) {
-              updatedProduct.startTime = statusUpdate.startTime;
-            }
-
-            return updatedProduct;
-          }
-
-          return product;
-        });
-      });
-    }
-  }, [statusUpdates]);
+  // Real-time updates removed (WebSocket). Future: poll or refresh as needed.
 
   // Function to get status color
   const getStatusColor = (status) => {
@@ -313,7 +240,7 @@ function TrackingTable({ newRun, statusUpdates }) {
 
     // Send batch rerun request to backend (skip successes)
     if (runnable.length > 0) {
-      cicdApi.sendRunRequest({
+      config.api.http.post(config.api.endpoints.cicd.runs, {
         action: "rerun",
         items: runnable.map((p) => ({
           id: p.id,
@@ -415,7 +342,7 @@ function TrackingTable({ newRun, statusUpdates }) {
     const toRerun = runProducts.filter((p) => p.status !== STATUSES.SUCCESS);
 
     if (toRerun.length > 0) {
-      cicdApi.sendRunRequest({
+      config.api.http.post(config.api.endpoints.cicd.runs, {
         action: "rerun",
         runId,
         items: toRerun.map((p, index) => ({
