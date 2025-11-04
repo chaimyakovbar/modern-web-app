@@ -119,7 +119,7 @@ function AddNewRunSensor({ onNewRun, onBack, onClose }) {
       "Product Names:",
       selectedProducts.map((p) => p.name)
     );
-    console.log("Full Run Object:", newRun);
+    // console.log("Full Run Object:", newRun);
     console.log("======================");
 
     // Pass the new run to the parent component
@@ -248,31 +248,6 @@ function AddNewRunSensor({ onNewRun, onBack, onClose }) {
                       component="legend"
                       sx={{ mb: 1, fontWeight: "bold" }}
                     >
-                      Sub Module
-                    </FormLabel>
-                    <RadioGroup
-                      value={subModule}
-                      onChange={(e) => setSubModule(e.target.value)}
-                      row
-                    >
-                      <FormControlLabel
-                        value="no"
-                        control={<Radio />}
-                        label="No"
-                      />
-                      <FormControlLabel
-                        value="updateSubModuletz"
-                        control={<Radio />}
-                        label="Update Sub Module"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-
-                  <FormControl component="fieldset" sx={{ mb: 2 }}>
-                    <FormLabel
-                      component="legend"
-                      sx={{ mb: 1, fontWeight: "bold" }}
-                    >
                       Agent Type
                     </FormLabel>
                     <RadioGroup
@@ -328,62 +303,93 @@ function AddNewRunSensor({ onNewRun, onBack, onClose }) {
                     </RadioGroup>
                   </FormControl>
 
-                  <FormControl component="fieldset" sx={{ mb: 2 }}>
-                    <FormLabel
-                      component="legend"
-                      sx={{ mb: 1, fontWeight: "bold" }}
-                    >
-                      Base Image Type
-                    </FormLabel>
-                    <RadioGroup
-                      value={baseImageType}
-                      onChange={handleBaseImageChange}
-                      row
-                    >
-                      <FormControlLabel
-                        value="default_image"
-                        control={<Radio />}
-                        label="Default Image"
-                      />
-                      <FormControlLabel
-                        value="base_image"
-                        control={<Radio />}
-                        label="Base Image"
-                      />
-                    </RadioGroup>
-                  </FormControl>
+                  {selectedProducts.length === 1 && (
+                    <FormControl component="fieldset" sx={{ mb: 2 }}>
+                      <FormLabel
+                        component="legend"
+                        sx={{ mb: 1, fontWeight: "bold" }}
+                      >
+                        Sub Module
+                      </FormLabel>
+                      <RadioGroup
+                        value={subModule}
+                        onChange={(e) => setSubModule(e.target.value)}
+                        row
+                      >
+                        <FormControlLabel
+                          value="no"
+                          control={<Radio />}
+                          label="No"
+                        />
+                        <FormControlLabel
+                          value="updateSubModuletz"
+                          control={<Radio />}
+                          label="Update Sub Module"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  )}
 
-                  {agentType !== "agent + poller" &&
-                    baseImageType === "base_image" && (
-                      <TextField
-                        fullWidth
-                        label={`${agentType} Image Details`}
-                        value={baseImageText}
-                        onChange={(e) => setBaseImageText(e.target.value)}
-                        placeholder="Enter base image details..."
-                        sx={{ mb: 2 }}
-                      />
-                    )}
-                  {agentType === "agent + poller" &&
-                    baseImageType === "base_image" && (
-                      <Box sx={{ mb: 2 }}>
-                        <TextField
-                          fullWidth
-                          label="Agent Details"
-                          value={agentText}
-                          onChange={(e) => setAgentText(e.target.value)}
-                          placeholder="Enter agent details..."
-                          sx={{ mb: 1 }}
-                        />
-                        <TextField
-                          fullWidth
-                          label="Poller Details"
-                          value={pollerText}
-                          onChange={(e) => setPollerText(e.target.value)}
-                          placeholder="Enter poller details..."
-                        />
-                      </Box>
-                    )}
+                  {selectedProducts.length === 1 && (
+                    <>
+                      <FormControl component="fieldset" sx={{ mb: 2 }}>
+                        <FormLabel
+                          component="legend"
+                          sx={{ mb: 1, fontWeight: "bold" }}
+                        >
+                          Base Image Type
+                        </FormLabel>
+                        <RadioGroup
+                          value={baseImageType}
+                          onChange={handleBaseImageChange}
+                          row
+                        >
+                          <FormControlLabel
+                            value="default_image"
+                            control={<Radio />}
+                            label="Default Image"
+                          />
+                          <FormControlLabel
+                            value="base_image"
+                            control={<Radio />}
+                            label="Base Image"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+
+                      {agentType !== "agent + poller" &&
+                        baseImageType === "base_image" && (
+                          <TextField
+                            fullWidth
+                            label={`${agentType} Image Details`}
+                            value={baseImageText}
+                            onChange={(e) => setBaseImageText(e.target.value)}
+                            placeholder="Enter base image details..."
+                            sx={{ mb: 2 }}
+                          />
+                        )}
+                      {agentType === "agent + poller" &&
+                        baseImageType === "base_image" && (
+                          <Box sx={{ mb: 2 }}>
+                            <TextField
+                              fullWidth
+                              label="Agent Details"
+                              value={agentText}
+                              onChange={(e) => setAgentText(e.target.value)}
+                              placeholder="Enter agent details..."
+                              sx={{ mb: 1 }}
+                            />
+                            <TextField
+                              fullWidth
+                              label="Poller Details"
+                              value={pollerText}
+                              onChange={(e) => setPollerText(e.target.value)}
+                              placeholder="Enter poller details..."
+                            />
+                          </Box>
+                        )}
+                    </>
+                  )}
 
                   {selectedProducts.length === 1 && (
                     <FormControl component="fieldset" sx={{ mb: 2 }}>

@@ -28,9 +28,6 @@ import TrackingTable from "./CI_CD/TrackingTable";
 import config from "../config/config";
 
 const CICD = ({}) => {
-  // const [data, setData] = useState(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
   const [newRun, setNewRun] = useState(null);
 
   // WebSocket removed – using REST only now
@@ -38,132 +35,67 @@ const CICD = ({}) => {
   // Function to handle new run
   const handleNewRun = (run) => {
     setNewRun(run);
-    // Send run to backend via REST
-    config.api.http.post(config.api.endpoints.cicd.runs, run);
+    // Build server payload: booleans -> 0/1, environment -> 0/1/2
+    const singleRun = {
+      ci: run.ci ? 1 : 0,
+      cd: run.cd ? 1 : 0,
+      subModule: run.subModule ? 1 : 0,
+      agent: run.agent ? 1 : 0,
+      poller: run.poller ? 1 : 0,
+      // development = 0, integration = 1, Production = 2
+      environment: run.development ? 0 : run.integration ? 1 : 2,
+      // keep additional fields if backend needs them
+      agentText: run.agentText,
+      pollerText: run.pollerText,
+      products: run.products,
+      branch: run.branch,
+      // id: run.id,
+      // name: run.name,
+      // baseImageText: run.baseImageText,
+      // status: run.status,
+      // startTime: run.startTime,
+    };
+
+    const serverPayload = {
+      ci: run.ci ? 1 : 0,
+      cd: run.cd ? 1 : 0,
+      agent: run.agent ? 1 : 0,
+      poller: run.poller ? 1 : 0,
+      // development = 0, integration = 1, Production = 2
+      environment: run.development ? 0 : run.integration ? 1 : 2,
+      products: run.products,
+      // baseImageText: run.baseImageText,
+      // subModule: run.subModule ? 1 : 0,
+      // agentText: run.agentText,
+      // pollerText: run.pollerText,
+      // branch: run.branch,
+    };
+
+    // Send transformed payload to backend via REST (route by products count)
+    if (Array.isArray(run.products) && run.products.length === 1) {
+      console.log(
+        "POST -> singleRun",
+        config.api.endpoints.cicd.singleRun,
+        singleRun
+      );
+      config.api.http.post(config.api.endpoints.cicd.singleRun, singleRun);
+    } else {
+      console.log(
+        "POST -> runs",
+        config.api.endpoints.cicd.runs,
+        serverPayload
+      );
+      config.api.http.post(config.api.endpoints.cicd.runs, serverPayload);
+    }
     // Reset newRun after we passed it
     setTimeout(() => setNewRun(null), 100);
   };
-
-  // const getStatusIcon = (status) => {
-  //   switch (status) {
-  //     case "success":
-  //       return <CheckCircle color="success" />;
-  //     case "failed":
-  //       return <Error color="error" />;
-  //     case "running":
-  //       return <PlayArrow color="primary" />;
-  //     default:
-  //       return <Schedule color="disabled" />;
-  //   }
-  // };
-
-  // const getStatusColor = (status) => {
-  //   switch (status) {
-  //     case "success":
-  //       return "success";
-  //     case "failed":
-  //       return "error";
-  //     case "running":
-  //       return "primary";
-  //     default:
-  //       return "default";
-  //   }
-  // };
-
-  // if (loading) {
-  //   return (
-  //     <Box>
-  //       <LinearProgress />
-  //       <Typography variant="h6" sx={{ mt: 2 }}>
-  //         טוען נתוני CI/CD...
-  //       </Typography>
-  //     </Box>
-  //   );
-  // }
-
-  // if (error && !data) {
-  //   return <Alert severity="error">נכשל בטעינת הנתונים: {error}</Alert>;
-  // }
 
   return (
     <Box>
       <AddNewRun onNewRun={handleNewRun} />
 
       <TrackingTable newRun={newRun} />
-
-      {/* <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          <BuildIcon sx={{ mr: 2, verticalAlign: "middle" }} />
-          {data?.title || "לוח בקרה CI/CD"}
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          {data?.description ||
-            "עקוב אחר צינורות האינטגרציה והפריסה הרציפים שלכם"}
-        </Typography>
-      </Box> */}
-
-      {/* Pipeline Status */}
-      {/* <Grid container spacing={3} sx={{ mb: 4 }}>
-        {data?.pipelines?.map((pipeline) => (
-          <Grid item xs={12} md={6} lg={4} key={pipeline.id}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  {getStatusIcon(pipeline.status)}
-                  <Typography variant="h6" sx={{ ml: 1 }}>
-                    {pipeline.name}
-                  </Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Branch: {pipeline.branch}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Duration: {pipeline.duration}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Last run: {pipeline.lastRun}
-                </Typography>
-                <Chip
-                  label={pipeline.status.toUpperCase()}
-                  color={getStatusColor(pipeline.status)}
-                  size="small"
-                  sx={{ mt: 1 }}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid> */}
-
-      {/* Recent Deployments */}
-      {/* <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            פריסות אחרונות
-          </Typography>
-          <List>
-            {data?.recentDeployments?.map((deployment, index) => (
-              <React.Fragment key={index}>
-                <ListItem>
-                  <ListItemIcon>
-                    {getStatusIcon(deployment.status)}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={`${deployment.environment} - ${deployment.version}`}
-                    secondary={deployment.time}
-                  />
-                  <Chip
-                    label={deployment.status}
-                    color={getStatusColor(deployment.status)}
-                    size="small"
-                  />
-                </ListItem>
-                {index < data.recentDeployments.length - 1 && <Divider />}
-              </React.Fragment>
-            ))}
-          </List>
-        </CardContent>
-      </Card> */}
     </Box>
   );
 };

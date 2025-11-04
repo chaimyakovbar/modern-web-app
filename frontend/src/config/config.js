@@ -23,8 +23,9 @@ const config = {
             // CI/CD — manage runs and actions
             cicd: {
                 runs: '/api/cicd/runs',            // list or create runs
+                singleRun: '/api/cicd/single-run',  // create a run for a single product
                 run: (id) => `/api/cicd/runs/${id}`, // get/delete single run
-                rerun: (id) => `/api/cicd/runs/${id}/rerun` // trigger rerun for run
+                rerun: (id) => `/api/cicd/runs/${id}/rerun`, // trigger rerun for run
             },
 
             // Home — dashboard data
