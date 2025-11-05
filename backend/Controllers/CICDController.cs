@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ModernWebApp.Backend.Models;
+using System;
 
 namespace ModernWebApp.Backend.Controllers
 {
@@ -63,6 +64,29 @@ namespace ModernWebApp.Backend.Controllers
             };
 
             return Ok(cicdData);
+        }
+
+        // Minimal POST endpoints so frontend POSTs won't 404
+        [HttpPost("runs")]
+        public IActionResult CreateRuns([FromBody] object payload)
+        {
+            return Ok(new
+            {
+                runId = Guid.NewGuid().ToString(),
+                status = "queued",
+                received = payload
+            });
+        }
+
+        [HttpPost("single-run")]
+        public IActionResult CreateSingleRun([FromBody] object payload)
+        {
+            return Ok(new
+            {
+                runId = Guid.NewGuid().ToString(),
+                status = "queued",
+                received = payload
+            });
         }
     }
 }

@@ -46,6 +46,11 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 builder.Services.AddScoped<RedisService>();
 
 // ===========================================
+// MVC Controllers
+// ===========================================
+builder.Services.AddControllers();
+
+// ===========================================
 // CORS CONFIGURATION - Read from appsettings.json
 // ===========================================
 var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
@@ -77,6 +82,7 @@ var app = builder.Build();
 // ===========================================
 app.UseCors("AllowFrontend");
 app.UseWebSockets();
+app.MapControllers();
 
 // ===========================================
 // REDIS HEALTH CHECK

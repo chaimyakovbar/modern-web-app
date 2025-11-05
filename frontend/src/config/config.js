@@ -24,6 +24,7 @@ const config = {
             cicd: {
                 runs: '/api/cicd/runs',            // list or create runs
                 singleRun: '/api/cicd/single-run',  // create a run for a single product
+                status: '/api/cicd/status',         // post pinplaneId:projectId map to get statuses
                 run: (id) => `/api/cicd/runs/${id}`, // get/delete single run
                 rerun: (id) => `/api/cicd/runs/${id}/rerun`, // trigger rerun for run
             },
